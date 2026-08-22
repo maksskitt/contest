@@ -4,13 +4,13 @@
 int main() {
     int n, m;
     if (scanf("%d%d", &n, &m) != 2) {
-        fputs("scanf failed\n", stderr);
+        perror("scanf");
         return 1;
     }
 
     int *arena = malloc(2 * sizeof(int) * n * m);
     if (arena == NULL) {
-        fputs("malloc failed\n", stderr);
+        perror("malloc");
         return 1;
     }
     int *table = arena;
@@ -18,8 +18,7 @@ int main() {
 
     for (int i = 0; i < n * m; i++)
         if (scanf("%d", &arena[i]) != 1) {
-            fprintf(stderr, "scanf failed for row %d, column %d\n", i / m,
-                    i % m);
+            perror("scanf");
             free(arena);
             return 1;
         }
@@ -44,7 +43,7 @@ int main() {
     int path_idx = path_len - 1;
     char *path = malloc(path_len);
     if (path == NULL) {
-        fputs("malloc failed\n", stderr);
+        perror("malloc");
         free(arena);
         return 1;
     }

@@ -4,13 +4,13 @@
 int main() {
     int n, m;
     if (scanf("%d%d", &n, &m) != 2) {
-        fputs("scanf failed\n", stderr);
+        perror("scanf");
         return 1;
     }
 
     int *dp = calloc(n * m, sizeof(int));
     if (dp == NULL) {
-        fputs("calloc failed\n", stderr);
+        perror("calloc");
         return 1;
     }
 
