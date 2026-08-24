@@ -1,12 +1,24 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
-int bfs(const int *graph, int rowsz, int src, int dst) {
-    const int *row = graph + rowsz * src;
-    for (int i = 0; i < rowsz; i++) {
-        if (row[i] && i == dst) {
-            return 1;
-        }
+void bfs(const int *adj_matrice, int *queue, int *dist, int rowsz, int src,
+         int dst) {
+    int front = 0, back = 0;
+
+    queue[back++] = src;
+    dist[src] = 0;
+    while (front < back) {
+        int parent = queue[front++];
+        const int *row_has = adj_matrice + parent * rowsz;
+
+        for (int child = 0; child < rowsz; child++)
+            if (row_has[child] && dist[child] == -1) {
+                dist[child] = dist[parent] + 1;
+                queue[back++] = child;
+                if (child == dst)
+                    return; // time saving if found
+            }
     }
 }
 
@@ -18,15 +30,16 @@ int main() {
     }
     int graphsz = n * n;
 
-    int *arena = malloc((graphsz + n) * sizeof(int));
-    int *graph = arena, *met = graph + graphsz;
+    int *arena = malloc((graphsz + 2 * n) * sizeof(int));
+    int *adj_matrice = arena, *queue = adj_matrice + graphsz, *dist = queue + n;
     if (arena == NULL) {
-        perror("malloc");
+        perror("alloc");
         return 1;
     }
+    memset(dist, -1, n * sizeof(*dist)); // make vertices unreachable by default
 
     for (int i = 0; i < graphsz; i++)
-        if (scanf("%d", &graph[i]) != 1) {
+        if (scanf("%d", &adj_matrice[i]) != 1) {
             perror("scanf");
             free(arena);
             return 1;
@@ -40,7 +53,9 @@ int main() {
     }
     src--, dst--;
 
-    printf("%d\n", bfs(graph, n, src, dst));
+    bfs(adj_matrice, queue, dist, n, src, dst);
+
+    printf("%d\n", dist[dst]);
 
     free(arena);
     return 0;
